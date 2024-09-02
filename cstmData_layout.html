@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer data layout trail</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0px;
+        padding: 0px;
+      }
+      label {
+        display: inline-block;
+        width: 110px;
+        text-align: right;
+        margin-right: 10px;
+        font-size: 16px;
+        /* text-decoration: underline; */
+      }
+      .lbl_mail_address {
+        text-align: left;
+        display: inline-block;
+        width: 380px;
+        margin-left: 20px;
+      }
+      input {
+        font-size: 10px;
+      }
+      .input-s {
+        display: inline-block;
+        width: 160px;
+      }
+      .input-l {
+        display: inline-block;
+        width: 380px;
+      }
+      #cstm_Num {
+        color: gray;
+      }
+      .container {
+        width: 390px;
+        display: flex;
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 20px;
+      }
+      div {
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+      .div_center {
+        display: flex;
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      h3 {
+        text-align: center;
+      }
+      h1 {
+        text-align: center;
+      }
+      #main {
+        background-color: antiquewhite;
+      }
+      button {
+        margin: 20px;
+        width: 120px;
+        height: 30px;
+        font-size: large;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body class="container">
+    <div id="main">
+      <br />
+      <div><h1>註冊會員</h1></div>
+      <br />
+      <form id="frm_main" name="frm_cstmData">
+        <div class="div_center">
+          <label for="">會員編號 : </label>
+          <input
+            id="cstm_Num"
+            type="text"
+            class="input-s"
+            value="000000001"
+            readonly
+          />
+        </div>
+        <hr />
+        <h3>--- 請先設定帳號密碼 ---</h3>
+        <div class="div_center">
+          <label for="">帳號 * : </label>
+          <input id="username" type="text" class="input-s" required />
+        </div>
+        <div class="div_center">
+          <label class="lbl_mail_address" id="Username_result"
+            >帳號驗證 :
+          </label>
+        </div>
+        <div class="div_center">
+          <label for="">密碼 * : </label>
+          <input id="pwd" type="text" class="input-s" required />
+        </div>
+        <hr />
+        <div>
+          <div class="div_center">
+            <label>姓氏 * : </label>
+            <input id="2ndName" type="text" class="input-s" required />
+          </div>
+          <div class="div_center">
+            <label for="">名字 * : </label>
+            <input id="1stName" type="text" class="input-s" required />
+          </div>
+        </div>
+        <div class="div_center">
+          <label for="">身分證號 : </label>
+          <input id="pID" type="text" class="input-s" />
+        </div>
+        <div class="div_center">
+          <label for="">生日 * : </label>
+          <input id="birth" type="text" class="input-s" required />
+        </div>
+        <div class="div_center">
+          <label for="">手機 * : </label>
+          <input id="cellphone" type="text" class="input-s" required />
+        </div>
+
+        <div class="div_center">
+          <label for="">Line 帳號 : </label>
+          <input id="line" type="text" class="input-s" />
+        </div>
+        <div class="div_center">
+          <label for="">如何得知我們 : </label>
+          <select
+            id="slct_howtoknowus"
+            v-model="selected"
+            class="input-s"
+            required
+          ></select>
+        </div>
+        <div class="div_center">
+          <label class="lbl_mail_address" for="">電子郵件 * : </label>
+        </div>
+        <div class="div_center">
+          <input id="eMail" type="text" class="input-l" required />
+        </div>
+        <div class="div_center">
+          <label class="lbl_mail_address" for="">地址 : </label>
+        </div>
+        <div class="div_center">
+          <input
+            id="address"
+            type="text"
+            class="input-l"
+            value="123456789012345678901234567890123456789012345678901234567890"
+          />
+        </div>
+        <label class="lbl_mail_address">* 必填欄位</label>
+        <hr />
+        <div class="div_center">
+          <button id="btn_submit" type="submit">送出</button>
+          <button type="reset">重置</button>
+        </div>
+      </form>
+    </div>
+    <script>
+      //? ------ Create cstmNum automatically and load data in HowToKnowUs select ------
+      document.addEventListener("DOMContentLoaded", function () {
+        // 發送請求到伺服器以獲取數據
+        fetch("http://127.0.0.1:8888/cstmNumCreation")
+          .then((response) => response.json()) // 解析回應的 JSON 數據
+          .then((result) => {
+            // console.log("Full result: ", result);
+            // 回來的資料是 result 的物件，裡面有一個 cstmQTY 的陣列
+            if (result && result.count_cstmNum !== undefined) {
+              // // 自動產生客戶編號
+              let tempString = (result.count_cstmNum + 1).toString();
+              let strCstmNum = tempString;
+              for (i = 0; i < 8 - tempString.length; i++) {
+                strCstmNum = "0" + strCstmNum;
+              }
+              document.getElementById("cstm_Num").value = strCstmNum;
+            } else {
+              console.error(
+                "count_cstmNum is undefined or result is not in expected format"
+              );
+            }
+            // 處理 HowToKnowUs 陣列
+            if (result.HowToKnowUs && Array.isArray(result.HowToKnowUs)) {
+              let str_slct = "";
+              for (i = 0; i < result.HowToKnowUs.length; i++) {
+                // console.log(result.HowToKnowUs[i]);
+                str_slct += `<option value=${result.HowToKnowUs[i].howNum}>${result.HowToKnowUs[i].HowWays}</option>`;
+                // console.log(str_slct);
+                // <option value="Keelong">Keelong</option>
+              }
+              str_slct =
+                '<option disabled value="" selected>必填，請選擇 ! ! !</option>' +
+                str_slct;
+              document.getElementById("slct_howtoknowus").innerHTML = str_slct;
+            } else {
+              console.error("HowToKnowUs is not in expected format");
+            }
+          })
+          .catch((error) => {
+            // 處理錯誤情況
+            console.error("Error:", error);
+          });
+      });
+
+      //? ------ Check if the username input is unique ------
+      document
+        .getElementById("username")
+        .addEventListener("change", function (event) {
+          event.preventDefault(); // 防止表單的默認提交行為
+          // 獲取使用者輸入的名稱和密碼
+          if (document.getElementById("username").value != "") {
+            const username = document.getElementById("username").value;
+            // 構建 POST 請求的數據體，json 格式。
+            const data = {
+              user_name: username,
+            };
+            // 使用 fetch API 發送 POST 請求
+            fetch("http://127.0.0.1:8888/cstmUsernameCheck", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json", // 指定發送的數據為 JSON 格式
+              },
+              body: JSON.stringify(data), // 將 JavaScript 對象轉換為 JSON 字符串
+            })
+              .then((response) => response.json()) // 解析回應的 JSON 數據
+              .then((result) => {
+                // 將伺服器回應的結果顯示在頁面上
+                document.getElementById("Username_result").innerText =
+                  result.message;
+              })
+              .catch((error) => {
+                // 處理錯誤情況
+                document.getElementById("Username_result").innerText =
+                  "Error: " + error.message;
+              });
+          } else {
+            document.getElementById("Username_result").innerText = "";
+          }
+        });
+
+      //? ------ Summit the customer data to server ------
+      document
+        .getElementById("btn_submit")
+        .addEventListener("click", function (event) {
+          event.preventDefault(); // 防止表單的默認提交行為
+          // const username = document.getElementById("username").value;
+          // 建立一個新的 Date 物件，代表當前的日期和時間
+          const today = new Date();
+          // 取得年、月、日
+          const year = today.getFullYear(); // 取得四位數的年份
+          const month = String(today.getMonth() + 1).padStart(2, "0"); // 取得月份（從 0 開始，故需加 1），並確保是兩位數
+          const day = String(today.getDate()).padStart(2, "0"); // 取得當天的日期，並確保是兩位數
+          // 將年、月、日組合成所需格式
+          const formattedDate = `${year}/${month}/${day}`;
+          // 構建 POST 請求的數據體，json 格式。
+          const data = {
+            cstmNum: document.getElementById("cstm_Num").value,
+            cstmUserName: document.getElementById("username").value,
+            cstmPWD: document.getElementById("pwd").value,
+            cstm2ndName: document.getElementById("2ndName").value,
+            cstm1stName: document.getElementById("1stName").value,
+            cstmID: document.getElementById("pID").value,
+            cstmBirth: document.getElementById("birth").value,
+            cstmTEL: document.getElementById("cellphone").value,
+            cstmEmail: document.getElementById("eMail").value,
+            cstmAddress: document.getElementById("address").value,
+            cstmHowToKnowUs: document.getElementById("slct_howtoknowus").value,
+            cstmLineID: document.getElementById("line").value,
+            cstmJoinDate: formattedDate,
+            cstmStatus: "activated",
+          };
+          // 使用 fetch API 發送 POST 請求
+          fetch("http://127.0.0.1:8888/add_customer_data", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json", // 指定發送的數據為 JSON 格式
+            },
+            body: JSON.stringify(data), // 將 JavaScript 對象轉換為 JSON 字符串
+          })
+            .then((response) => response.json()) // 解析回應的 JSON 數據
+            .then((result) => {
+              // 將伺服器回應的結果顯示在頁面上
+              alert(result.message);
+              window.location.href = "./temp.html"; // 跳轉到另一個網頁
+            })
+            .catch((error) => {
+              // 處理錯誤情況
+              document.getElementById("Username_result").innerText =
+                "Error: " + error.message;
+            });
+        });
+    </script>
+  </body>
+</html>
